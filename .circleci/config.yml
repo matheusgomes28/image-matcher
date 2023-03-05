@@ -22,12 +22,19 @@ jobs:
             cmake --version
             conan --version
       - run:
+          name: "Installing Dependencies"
+          command: |
+            ./scripts/install_deps.sh
+      - run:
           name: "Getting dependencies with Conan"
           command: |
-            CONAN_SYSREQUIRES_MODE=enabled conan install . --install-folder conan --build=missing -scompiler=gcc -scompiler.version=9 -scompiler.libcxx=libstdc++11
+            conan profile new default --detect
+            conan profile update settings.compiler.libcxx=libstdc++11 default
+            conan install . --install-folder conan --build=missing -scompiler=gcc -scompiler.version=9 -scompiler.libcxx=libstdc++11
       - run:
           name: "Configure with CMake"
-          command: "cmake . --preset unix-deb"
+          command: |
+            cmake . --preset unix-deb
       - run:
           name: "Build with CMake"
           command: "cmake --build --preset unix-deb"
