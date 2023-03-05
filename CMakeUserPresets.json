@@ -1,0 +1,9 @@
+{
+    "version": 4,
+    "vendor": {
+        "conan": {}
+    },
+    "include": [
+        "/home/matheus/development/cv-matching/conan/CMakePresets.json"
+    ]
+}
