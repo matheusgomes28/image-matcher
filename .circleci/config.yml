@@ -5,22 +5,34 @@ version: 2.1
 # Define a job to be invoked later in a workflow.
 # See: https://circleci.com/docs/2.0/configuration-reference/#jobs
 jobs:
-  say-hello:
+  build:
     # Specify the execution environment. You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
     # See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
     docker:
-      - image: cimg/base:stable
+      - image: mattgomes28/wavytune:compx86_64v4
     # Add steps to the job
     # See: https://circleci.com/docs/2.0/configuration-reference/#steps
     steps:
       - checkout
       - run:
-          name: "Say hello"
-          command: "echo Hello, World!"
+          name: "Getting CMake & Conan version"
+          command: |
+            cmake --version
+            conan --version
+      - run:
+          name: "Getting dependencies with Conan"
+          command: |
+            conan install . --install-folder conan --build -scompiler=gcc -scompiler.version=9 -scompiler.libcxx=libstdc++11
+      - run:
+          name: "Configure with CMake"
+          command: "cmake . --preset unix-deb"
+      - run:
+          name: "Build with CMake"
+          command: "cmake --build --preset unix-deb"
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
-  say-hello-workflow:
+  build-workflow:
     jobs:
-      - say-hello
+      - build
