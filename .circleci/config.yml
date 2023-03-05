@@ -22,7 +22,7 @@ jobs:
       - run:
           name: "Getting dependencies with Conan"
           command: |
-            conan install . --install-folder conan --build -scompiler=gcc -scompiler.version=9 -scompiler.libcxx=libstdc++11
+            conan install . --install-folder conan --build=missing -scompiler=gcc -scompiler.version=9 -scompiler.libcxx=libstdc++11
       - run:
           name: "Configure with CMake"
           command: "cmake . --preset unix-deb"
