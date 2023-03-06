@@ -2,10 +2,13 @@
 # See: https://circleci.com/docs/2.0/configuration-reference
 version: 2.1
 
+orbs:
+  win: circleci/windows@5.0
+
 # Define a job to be invoked later in a workflow.
 # See: https://circleci.com/docs/2.0/configuration-reference/#jobs
 jobs:
-  build:
+  build-ubuntu20-04:
     # Specify the execution environment. You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
     # See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
     docker:
@@ -39,6 +42,44 @@ jobs:
       - store_artifacts:
           path: install/
           destination: matching_app
+  build-windows-vs2022:
+    # Specify the execution environment. You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
+    # See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
+    executor: win/server-2022
+    environment:
+      CONAN_SYSREQUIRES_MODE: enabled
+    # Add steps to the job
+    # See: https://circleci.com/docs/2.0/configuration-reference/#steps
+    steps:
+      - checkout
+      - run:
+          name: "Installing The Dependencies"
+          command: |
+            choco install cmake -y --installargs 'ADD_CMAKE_TO_PATH=System'
+            choco install conan --version=1.58.0 -y  --installargs '/PathType:Machine'
+            refreshenv
+      - run:
+          name: "Getting CMake & Conan version"
+          command: |
+            cmake --version
+            conan --version
+      - run:
+          name: "Getting dependencies with Conan"
+          command: |
+            conan profile new default --detect
+            conan install . --install-folder conan --build=missing -c tools.system.package_manager:mode=install
+      - run:
+          name: "Configure with CMake"
+          command: |
+            cmake . --preset unix-deb
+      - run:
+          name: "Build with CMake"
+          command: |
+            cmake --build --preset unix-deb
+            cmake --install build/unix-deb
+      - store_artifacts:
+          path: install/
+          destination: matching_app
 
 
 # Invoke jobs via workflows
@@ -46,4 +87,5 @@ jobs:
 workflows:
   build-workflow:
     jobs:
-      - build
+      - build-ubuntu20-04
+      - build-windows-vs2022
