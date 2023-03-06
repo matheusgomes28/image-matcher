@@ -33,7 +33,13 @@ jobs:
             cmake . --preset unix-deb
       - run:
           name: "Build with CMake"
-          command: "cmake --build --preset unix-deb"
+          command: |
+            cmake --build --preset unix-deb
+            cmake --install build/unix-deb
+      - store_artifacts:
+          path: install/
+          destination: matching_app
+
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
