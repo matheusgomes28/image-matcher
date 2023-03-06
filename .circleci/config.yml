@@ -48,6 +48,8 @@ jobs:
     executor: win/server-2022
     environment:
       CONAN_SYSREQUIRES_MODE: enabled
+      CMAKE_EXE: C:\Program Files\CMake\cmake.exe
+      CONAN_EXE: C:\Program Files\Conan\conan.exe
     # Add steps to the job
     # See: https://circleci.com/docs/2.0/configuration-reference/#steps
     steps:
@@ -55,14 +57,13 @@ jobs:
       - run:
           name: "Installing The Dependencies"
           command: |
-            choco install cmake -y --installargs 'ADD_CMAKE_TO_PATH=System'
-            choco install conan --version=1.58.0 -y  --installargs '/PathType:Machine'
-            refreshenv
+            choco install cmake -y --no-progress --installargs 'ADD_CMAKE_TO_PATH=System'
+            choco install conan -y --no-progress --version=1.58.0 --installargs '/PathType:Machine'
       - run:
           name: "Getting CMake & Conan version"
           command: |
-            cmake --version
-            conan --version
+            iex "& $CMAKE_EXE --version"
+            iex "& $CONAN_EXE --version"
       - run:
           name: "Getting dependencies with Conan"
           command: |
