@@ -106,13 +106,19 @@
             "name": "vs2022-rel",
             "displayName": "Visual Studio 2022 Release",
             "binaryDir": "${sourceDir}/build/vs2022-rel",
-            "inherits": ["vs2022", "rel"]
+            "inherits": ["vs2022", "rel", "conan-rel"],
+            "cacheVariables": {
+                "CMAKE_MSVC_RUNTIME_LIBRARY": "MultiThreaded"
+            }
         },
         {
             "name": "vs2022-deb",
             "displayName": "Visual Studio 2022 Debug",
             "binaryDir": "${sourceDir}/build/vs2022-deb",
-            "inherits": ["vs2022", "deb"]
+            "inherits": ["vs2022", "deb", "conan-rel"],
+            "cacheVariables": {
+                "CMAKE_MSVC_RUNTIME_LIBRARY": "MultiThreadedDebug"
+            }
         },
         {
             "name": "vs2019-rel",
